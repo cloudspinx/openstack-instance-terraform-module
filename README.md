@@ -26,7 +26,8 @@ Customize the following configurations to configure OpenStack provider:
 terraform {
   required_providers {
     openstack = {
-      source = "hashicorp/openstack"
+      source = "terraform-provider-openstack/openstack"
+      version = "~> 2.1.0"
     }
   }
 }
@@ -235,7 +236,6 @@ module "instance" {
             ]
 ```
 
-
 ## 2. Using Terragrunt
 
 Sample folder structure
@@ -288,7 +288,7 @@ locals {
 #}
 
 # Generate OpenStack provider block
-generate "provider" {
+generate "openstack_provider" {
     path = "provider.tf"
     if_exists = "overwrite_terragrunt"
     contents  = <<EOF
@@ -300,6 +300,29 @@ generate "provider" {
     region          = "${local.region}"
     }
     EOF
+}
+
+generate "required_providers" {
+  path = "required_providers.tf"
+
+  if_exists = "overwrite_terragrunt"
+
+  contents = <<EOF
+terraform { 
+  required_version = ">= 1.2"
+ 
+  required_providers {
+    local = {
+      source = "hashicorp/local"
+    }
+    openstack = {
+      source  = "terraform-provider-openstack/openstack"
+      version = "~> 2.1.0"
+    }
+  }
+}
+
+EOF
 }
 ```
 
